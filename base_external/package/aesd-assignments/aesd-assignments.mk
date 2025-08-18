@@ -4,25 +4,45 @@
 #
 ##############################################################
 
-AESD_ASSIGNMENTS_VERSION = d9fd569eb06d5165b60e6878492a509a0e56533c
+AESD_ASSIGNMENTS_VERSION = 758a00cd7fc4dd0813e13cd1ad824ec29e15513e
 AESD_ASSIGNMENTS_SITE = git@github.com:cu-ecen-aeld/assignments-3-and-later-dylanzflores.git
 AESD_ASSIGNMENTS_SITE_METHOD = git
 AESD_ASSIGNMENTS_GIT_SUBMODULES = YES
 
-# Build command: Build finder-app by calling make in finder-app directory
+# Debug info for troubleshooting
+$(info AESD_ASSIGNMENTS source dir: $(@D))
+$(info Building aesdsocket from: $(@D)/server)
+
+# Define subdirectories
+AESD_FINDER_APP_DIR = $(@D)/finder-app
+AESD_SERVER_DIR = $(@D)/server
+
+# Build commands
 define AESD_ASSIGNMENTS_BUILD_CMDS
-	$(MAKE) CC=$(TARGET_CC) -C $(@D)/finder-app all
+	$(MAKE) CC=$(TARGET_CC) -C $(AESD_FINDER_APP_DIR) all
+	$(MAKE) CC=$(TARGET_CC) -C $(AESD_SERVER_DIR) all
 endef
 
+# Install commands
 define AESD_ASSIGNMENTS_INSTALL_TARGET_CMDS
-	$(INSTALL) -d 0755 $(@D)/conf/ $(TARGET_DIR)/etc/finder-app/conf/
-	$(INSTALL) -m 0755 $(@D)/conf/* $(TARGET_DIR)/etc/finder-app/conf/
+	# Install conf files
+	$(INSTALL) -d 0755 $(AESD_FINDER_APP_DIR)/conf/ $(TARGET_DIR)/etc/finder-app/conf/
+	$(INSTALL) -m 0755 $(AESD_FINDER_APP_DIR)/conf/* $(TARGET_DIR)/etc/finder-app/conf/
+
+	# Install assignment 4 test scripts
 	$(INSTALL) -m 0755 $(@D)/assignment-autotest/test/assignment4/* $(TARGET_DIR)/bin
-	$(INSTALL) -m 0755 $(@D)/finder-app/finder.sh $(TARGET_DIR)/bin/
-	$(INSTALL) -m 0755 $(@D)/finder-app/finder-test.sh $(TARGET_DIR)/bin/
-	$(INSTALL) -m 0755 $(@D)/finder-app/writer.sh $(TARGET_DIR)/bin/
-	$(INSTALL) -m 0755 $(@D)/finder-app/writer $(TARGET_DIR)/bin/
+
+	# Install finder-app scripts and binary
+	$(INSTALL) -m 0755 $(AESD_FINDER_APP_DIR)/finder.sh $(TARGET_DIR)/bin/
+	$(INSTALL) -m 0755 $(AESD_FINDER_APP_DIR)/finder-test.sh $(TARGET_DIR)/bin/
+	$(INSTALL) -m 0755 $(AESD_FINDER_APP_DIR)/writer.sh $(TARGET_DIR)/bin/
+	$(INSTALL) -m 0755 $(AESD_FINDER_APP_DIR)/writer $(TARGET_DIR)/bin/
+
+	# Install server binary and init script
+	$(INSTALL) -m 0755 $(AESD_SERVER_DIR)/aesdsocket $(TARGET_DIR)/usr/bin/
+	$(INSTALL) -D -m 0755 $(AESD_SERVER_DIR)/aesdsocket-start-stop $(TARGET_DIR)/etc/init.d/S99aesdsocket
 endef
 
+# Evaluate package
 $(eval $(generic-package))
 
