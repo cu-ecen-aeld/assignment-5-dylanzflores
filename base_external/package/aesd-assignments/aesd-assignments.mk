@@ -3,11 +3,11 @@
 # AESD-ASSIGNMENTS
 #
 ##############################################################
-
-AESD_ASSIGNMENTS_VERSION = 9c1b77465338cffb91f433ea8c9e33d54b6e7c38
-AESD_ASSIGNMENTS_SITE = git@github.com:cu-ecen-aeld/assignments-3-and-later-dylanzflores.git
+AESD_ASSIGNMENTS_SITE = https://github.com/cu-ecen-aeld/assignments-3-and-later-dylanzflores.git
 AESD_ASSIGNMENTS_SITE_METHOD = git
+AESD_ASSIGNMENTS_VERSION = 9c1b77465338cffb91f433ea8c9e33d54b6e7c38
 AESD_ASSIGNMENTS_GIT_SUBMODULES = YES
+
 
 # Debug info for troubleshooting
 $(info AESD_ASSIGNMENTS source dir: $(@D))

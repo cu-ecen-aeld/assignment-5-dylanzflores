@@ -1,4 +1,5 @@
 name: assignment-test
+
 on:
   push:
     tags-ignore:
@@ -10,31 +11,19 @@ jobs:
   full-test:
     runs-on: self-hosted
     container: cuaesd/aesd-autotest:24-assignment5-buildroot
-  
-    steps:
-      # Start SSH agent with your key for private repo/submodule access
-      - uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Checkout repo with full history & recursive submodules
+    steps:
+      # Checkout your repo with submodules (if any)
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
           submodules: recursive
 
-      # Debug: show submodule status (optional)
+      # Optional: Show submodule status for debugging
       - name: Show git submodule status
         run: git submodule status
 
-      # Run your test script with SSH options
+      # Run full test script
       - name: Run full test
-        env:
-          GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
         run: ./full-test.sh
-
-      # Always clean SSH keys
-      - name: Cleanup
-        if: always()
-        run: ssh-add -D
 
