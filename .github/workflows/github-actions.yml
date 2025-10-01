@@ -10,7 +10,7 @@ jobs:
   full-test:
     runs-on: self-hosted
     container: cuaesd/aesd-autotest:24-assignment5-buildroot
-    timeout-minutes: 120
+  
     steps:
       # Start SSH agent with your key for private repo/submodule access
       - uses: webfactory/ssh-agent@v0.5.3
