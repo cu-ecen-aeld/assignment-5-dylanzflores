@@ -1,0 +1,6 @@
+# Include aesd-assignments (starter code)
+source "../base_external/package/aesd-assignments/Config.in"
+
+# Include ldd package
+source "../base_external/package/ldd/Config.in"
+

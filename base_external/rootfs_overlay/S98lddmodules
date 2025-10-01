@@ -1,0 +1,9 @@
+#!/bin/sh
+# S98lddmodules - load ldd3 modules at startup
+
+# Load hello and scull modules
+modprobe hello
+modprobe scull
+
+# Faulty module is optional; load manually to avoid freezing
+# modprobe faulty
