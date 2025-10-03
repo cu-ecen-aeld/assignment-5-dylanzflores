@@ -1,9 +1,22 @@
 #!/bin/sh
-# S98lddmodules - load ldd3 modules at startup
 
-# Load hello and scull modules
-modprobe hello
-modprobe scull
+case "$1" in
+  start)
+    echo "Loading scull, faulty, and hello modules..."
+    modprobe hello || echo "Failed to load hello"
+    modprobe scull || echo "Failed to load scull"
+    modprobe faulty || echo "Failed to load faulty"
+    ;;
+  stop)
+    echo "Unloading scull, faulty, and hello modules..."
+    rmmod hello || echo "Failed to unload hello"
+    rmmod faulty || echo "Failed to unload faulty"
+    rmmod scull || echo "Failed to unload scull"
+    ;;
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+esac
 
-# Faulty module is optional; load manually to avoid freezing
-# modprobe faulty
+exit 0
+

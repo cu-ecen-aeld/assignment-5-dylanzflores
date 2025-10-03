@@ -3,7 +3,7 @@
 # AESD-ASSIGNMENTS
 #
 ##############################################################
-AESD_ASSIGNMENTS_SITE = https://github.com/cu-ecen-aeld/assignments-3-and-later-dylanzflores.git
+AESD_ASSIGNMENTS_SITE = git@github.com:cu-ecen-aeld/assignments-3-and-later-dylanzflores.git
 AESD_ASSIGNMENTS_SITE_METHOD = git
 AESD_ASSIGNMENTS_VERSION = 9c1b77465338cffb91f433ea8c9e33d54b6e7c38
 AESD_ASSIGNMENTS_GIT_SUBMODULES = YES
@@ -41,6 +41,19 @@ define AESD_ASSIGNMENTS_INSTALL_TARGET_CMDS
 	# Install server binary and init script
 	$(INSTALL) -m 0755 $(AESD_SERVER_DIR)/aesdsocket $(TARGET_DIR)/usr/bin/
 	$(INSTALL) -D -m 0755 $(AESD_SERVER_DIR)/aesdsocket-start-stop $(TARGET_DIR)/etc/init.d/S99aesdsocket
+		# Install kernel modules to /lib/modules
+		# Install kernel modules to /lib/modules
+	$(INSTALL) -d $(TARGET_DIR)/lib/modules
+	cp -v $(@D)/assignment7/*.ko $(TARGET_DIR)/lib/modules/
+
+	$(HOST_DIR)/bin/depmod -b $(TARGET_DIR) -a
+
+
+	# Ensure /etc/modules exists and list modules to load at boot
+	echo "hello" >> $(TARGET_DIR)/etc/modules
+	echo "faulty" >> $(TARGET_DIR)/etc/modules
+	echo "scull" >> $(TARGET_DIR)/etc/modules
+
 endef
 
 # Evaluate package

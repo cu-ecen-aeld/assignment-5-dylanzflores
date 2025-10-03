@@ -1,0 +1,29 @@
+#!/bin/sh
+
+LOGFILE=/var/log/lddmodules.log
+echo "=== Starting module load at $(date) ===" >> $LOGFILE
+
+case "$1" in
+  start)
+    echo "Sleeping 3 seconds to ensure system is ready..." >> $LOGFILE
+    sleep 3
+
+    echo "Loading hello, scull, and faulty modules..." >> $LOGFILE
+    modprobe hello >> $LOGFILE 2>&1 || echo "Failed to load hello" >> $LOGFILE
+    modprobe scull >> $LOGFILE 2>&1 || echo "Failed to load scull" >> $LOGFILE
+    modprobe faulty >> $LOGFILE 2>&1 || echo "Failed to load faulty" >> $LOGFILE
+    ;;
+  stop)
+    echo "Unloading modules..." >> $LOGFILE
+    rmmod hello >> $LOGFILE 2>&1
+    rmmod faulty >> $LOGFILE 2>&1
+    rmmod scull >> $LOGFILE 2>&1
+    ;;
+  *)
+    echo "Usage: $0 {start|stop}" >> $LOGFILE
+    exit 1
+esac
+
+echo "=== Module load complete ===" >> $LOGFILE
+exit 0
+
