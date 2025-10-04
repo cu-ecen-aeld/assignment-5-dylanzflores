@@ -9,8 +9,8 @@ on:
 
 jobs:
   full-test:
-    container: cuaesd/aesd-autotest:24-assignment7-buildroot
     runs-on: self-hosted
+    container: cuaesd/aesd-autotest:24-assignment7-buildroot
 
     steps:
       - name: Checkout repo with submodules
@@ -24,6 +24,12 @@ jobs:
         with:
           path: buildroot/dl
           key: buildroot-dl-${{ hashFiles('**/Config.in') }}
+
+      - name: Cache Buildroot output directory
+        uses: actions/cache@v3
+        with:
+          path: buildroot/output
+          key: buildroot-output-${{ hashFiles('buildroot/.config') }}
 
       - name: Show system info
         run: |
