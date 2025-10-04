@@ -2,44 +2,22 @@ name: assignment-test
 
 on:
   push:
-    tags-ignore:
-      - '*'
     branches:
-      - '*'
+      - main
+  pull_request:
 
 jobs:
-  full-test:
-    runs-on: self-hosted
-    container: cuaesd/aesd-autotest:24-assignment5-buildroot
-
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo with submodules
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: recursive
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Cache Buildroot downloads
-        uses: actions/cache@v3
-        with:
-          path: buildroot/dl
-          key: buildroot-dl-${{ hashFiles('**/Config.in') }}
-
-      - name: Show system info
+      - name: Set up build environment
         run: |
-          echo "CPU Info:"
-          lscpu
-          echo "Memory:"
-          free -h
-          echo "Disk Space:"
-          df -h
-          echo "Available cores: $(nproc)"
+          sudo apt-get update
+          sudo apt-get install -y build-essential  # Add any dependencies you need
 
-      - name: Run full test with parallel build
-        run: |
-          echo "Starting test at $(date)"
-          chmod +x ./full-test.sh
-          export MAKEFLAGS="-j$(nproc)"
-          ./full-test.sh
-          echo "Test completed at $(date)"
+      - name: Run full-test script
+        run: ./full-test
 
