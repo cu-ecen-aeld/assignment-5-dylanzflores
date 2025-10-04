@@ -9,8 +9,8 @@ on:
 
 jobs:
   full-test:
-    runs-on: ubuntu-latest
     container: cuaesd/aesd-autotest:24-assignment7-buildroot
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo with submodules
