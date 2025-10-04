@@ -19,14 +19,12 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      # Optional: Cache Buildroot downloads to speed up rebuilds
       - name: Cache Buildroot downloads
         uses: actions/cache@v3
         with:
           path: buildroot/dl
           key: buildroot-dl-${{ hashFiles('**/Config.in') }}
 
-      # Optional: Print system info to debug performance
       - name: Show system info
         run: |
           echo "CPU Info:"
@@ -42,6 +40,6 @@ jobs:
           echo "Starting test at $(date)"
           chmod +x ./full-test.sh
           export MAKEFLAGS="-j$(nproc)"
-          time ./full-test.sh
+          ./full-test.sh
           echo "Test completed at $(date)"
 
