@@ -10,7 +10,7 @@ on:
 jobs:
   full-test:
     runs-on: ubuntu-latest
-    container: cuaesd/aesd-autotest:24-assignment5-buildroot
+    container: cuaesd/aesd-autotest:24-assignment7-buildroot
 
     steps:
       - name: Checkout repo with submodules
