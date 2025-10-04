@@ -13,17 +13,35 @@ jobs:
     container: cuaesd/aesd-autotest:24-assignment5-buildroot
 
     steps:
-      # Checkout your repo with submodules (if any)
-      - uses: actions/checkout@v2
+      - name: Checkout repo with submodules
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
           submodules: recursive
 
-      # Optional: Show submodule status for debugging
-      - name: Show git submodule status
-        run: git submodule status
+      # Optional: Cache Buildroot downloads to speed up rebuilds
+      - name: Cache Buildroot downloads
+        uses: actions/cache@v3
+        with:
+          path: buildroot/dl
+          key: buildroot-dl-${{ hashFiles('**/Config.in') }}
 
-      # Run full test script
-      - name: Run full test
-        run: ./full-test.sh
+      # Optional: Print system info to debug performance
+      - name: Show system info
+        run: |
+          echo "CPU Info:"
+          lscpu
+          echo "Memory:"
+          free -h
+          echo "Disk Space:"
+          df -h
+          echo "Available cores: $(nproc)"
+
+      - name: Run full test with parallel build
+        run: |
+          echo "Starting test at $(date)"
+          chmod +x ./full-test.sh
+          export MAKEFLAGS="-j$(nproc)"
+          time ./full-test.sh
+          echo "Test completed at $(date)"
 
