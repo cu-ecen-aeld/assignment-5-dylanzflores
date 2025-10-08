@@ -9,7 +9,6 @@ jobs:
   full-test:
     runs-on: self-hosted  # Ensures the job runs on a self-hosted runner
     container: cuaesd/aesd-autotest:24-assignment5-buildroot  # Specifies the Docker container to use
-    timeout-minutes: 120  # Sets a maximum run time for the job
 
     steps:
       - name: Checkout repository with submodules
