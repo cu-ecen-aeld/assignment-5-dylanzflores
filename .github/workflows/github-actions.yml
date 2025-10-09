@@ -1,40 +1,46 @@
-# Assignment 7 Test
 name: assignment-test
 
 on:
   push:
     branches:
-      - '**'  # Triggers the workflow on push to any branch
+      - '**'
 
 jobs:
   full-test:
-    runs-on: self-hosted  # Ensures the job runs on a self-hosted runner
-    container: cuaesd/aesd-autotest:24-assignment5-buildroot  # Specifies the Docker container to use
+    runs-on: self-hosted
+    container:
+      image: cuaesd/aesd-autotest:24-assignment5-buildroot
+      options: --cpus 8 --memory 8g
 
     steps:
-      - name: Checkout repository with submodules
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          submodules: recursive  # Initializes and updates submodules
+          submodules: recursive
 
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Loads the SSH private key from GitHub Secrets
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Run full test with parallel build
+      - name: Cache Buildroot downloads
+        uses: actions/cache@v3
+        with:
+          path: |
+            buildroot/dl
+            buildroot/output/build
+          key: buildroot-${{ runner.os }}-${{ hashFiles('**/Config.in') }}
+
+      - name: Run full test
         env:
-          GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"  # Disables strict host key checking for SSH
+          GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
         run: |
-          echo "Starting test at $(date)"
+          echo "Container sees $(nproc) CPUs"
           chmod +x ./full-test.sh
-          export MAKEFLAGS="-j$(nproc)"  # Utilizes all available CPU cores for parallel build
+          export MAKEFLAGS="-j$(nproc)"
           ./full-test.sh
-          echo "Test completed at $(date)"
 
       - name: Cleanup SSH agent
         if: always()
-        run: |
-          ssh-add -D  # Removes all identities from the SSH agent
+        run: ssh-add -D
 
