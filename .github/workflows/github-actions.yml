@@ -13,33 +13,56 @@ jobs:
       options: --cpus 8 --memory 8g
 
     steps:
-      - uses: actions/checkout@v2
+      # Checkout repo + submodules
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
 
+      # Setup SSH (for cloning private repos)
       - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Cache Buildroot downloads
+      # 🧱 Cache all Buildroot artifacts and compiler cache
+      - name: Cache Buildroot data
         uses: actions/cache@v3
         with:
           path: |
             buildroot/dl
             buildroot/output/build
-          key: buildroot-${{ runner.os }}-${{ hashFiles('**/Config.in') }}
+            buildroot/output/host
+            buildroot/output/staging
+            buildroot/output/target
+            buildroot/.ccache
+          key: buildroot-${{ runner.os }}-${{ hashFiles('**/Config.in', '**/.config') }}
+          restore-keys: |
+            buildroot-${{ runner.os }}-
 
+      # ⚙️ Configure environment for parallel + cached builds
+      - name: Configure Buildroot environment
+        run: |
+          echo "Container sees $(nproc) CPUs"
+          export MAKEFLAGS="-j$(nproc)"
+          echo "MAKEFLAGS=$MAKEFLAGS"
+
+          # Enable ccache directory
+          mkdir -p buildroot/.ccache
+          export BR2_CCACHE=y
+          export BR2_CCACHE_DIR="/__w/${{ github.repository }}/buildroot/.ccache"
+          echo "BR2_CCACHE_DIR=$BR2_CCACHE_DIR"
+
+      # 🚀 Run full test
       - name: Run full test
         env:
           GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+          MAKEFLAGS: "-j$(nproc)"
         run: |
-          echo "Container sees $(nproc) CPUs"
           chmod +x ./full-test.sh
-          export MAKEFLAGS="-j$(nproc)"
           ./full-test.sh
 
+      # 🧹 Clean up
       - name: Cleanup SSH agent
         if: always()
         run: ssh-add -D
