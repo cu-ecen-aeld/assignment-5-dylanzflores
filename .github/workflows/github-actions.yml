@@ -6,7 +6,7 @@ on:
       - '**'
 
 jobs:
-  skip-build-test:
+  full-test:
     runs-on: self-hosted
     container:
       image: cuaesd/aesd-autotest:24-assignment5-buildroot
