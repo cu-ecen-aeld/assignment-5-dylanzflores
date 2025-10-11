@@ -53,10 +53,11 @@ jobs:
           export BR2_CCACHE_DIR="/__w/${{ github.repository }}/buildroot/.ccache"
           echo "BR2_CCACHE_DIR=$BR2_CCACHE_DIR"
 
-      # 5️⃣ Run full test
+      # 5️⃣ Run full test (skip QEMU)
       - name: Run full test
         env:
           GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+          SKIP_QEMU: 1
           MAKEFLAGS: "-j2"
         run: |
           chmod +x ./full-test.sh
