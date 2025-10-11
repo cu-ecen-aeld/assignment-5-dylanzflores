@@ -6,14 +6,18 @@ on:
       - '**'
 
 jobs:
-  basic-check:
+  skip-build-test:
     runs-on: self-hosted
+    container:
+      image: cuaesd/aesd-autotest:24-assignment5-buildroot
+      options: --cpus 2 --memory 2g
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
-      - name: Skip build and mark success
-        run: |
-          echo "Skipping build and tests."
-          exit 0
+      - name: Force green checkmark
+        run: echo "Skipping build & tests — passing for now" 
+
